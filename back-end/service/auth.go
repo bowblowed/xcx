@@ -1,0 +1,37 @@
+package service
+
+import (
+	"fmt"
+
+	"github.com/dgrijalva/jwt-go"
+)
+
+var secretKey = "abbcaasfhasiopfhpad"
+
+func GenerateToken(openID string) (string, error) {
+	// 设置过期时间，这里设置为 1 小时
+	// 创建一个新的 token 对象
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"openid": openID,
+	})
+	// 使用密钥进行签名
+	tokenString, err := token.SignedString([]byte(secretKey))
+	if err != nil {
+		return "", err
+	}
+	return tokenString, nil
+}
+
+func ParseToken(tokenString string) (string, error) {
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		return []byte(secretKey), nil
+	})
+	if err != nil {
+		return "", err
+	}
+	if openid, ok := token.Claims.(jwt.MapClaims)["openid"]; ok && token.Valid {
+		return openid.(string), nil
+	} else {
+		return "", fmt.Errorf("invalid token")
+	}
+}
