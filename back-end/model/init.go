@@ -17,6 +17,11 @@ func init() {
 		panic("无法连接到数据库：" + err.Error())
 	}
 	fmt.Println(db)
+	db.AutoMigrate(&User{})
+	db.AutoMigrate(&Category{})
+	db.AutoMigrate(&Product{})
+	db.AutoMigrate(&Order{})
+
 }
 
 func F() {

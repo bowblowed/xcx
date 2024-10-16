@@ -1,13 +1,7 @@
 package main
 
-import (
-	"back-end/model"
-
-	"github.com/gin-gonic/gin"
-)
+import "back-end/router"
 
 func main() {
-	model.F()
-	r := gin.Default()
-	r.Run(":8080")
+	router.RunRouter()
 }
