@@ -1,15 +1,13 @@
 package service
 
 import (
+	"back-end/config"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
 	"net/http"
 )
-
-var appID = ""
-var appSecret = ""
 
 type WXLoginResponse struct {
 	Openid     string `json:"openid"`
@@ -20,7 +18,7 @@ type WXLoginResponse struct {
 }
 
 func WxLogin(code string) (string, error) {
-	url := fmt.Sprintf("https://api.weixin.qq.com/sns/jscode2session?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code", appID, appSecret, code)
+	url := fmt.Sprintf("https://api.weixin.qq.com/sns/jscode2session?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code", config.Wx.AppiD, config.Wx.Appsecret, code)
 	resp, err := http.Get(url)
 	if err != nil {
 		return "", errors.New("wx server connect error")
@@ -39,5 +37,5 @@ func WxLogin(code string) (string, error) {
 	if wxResp.ErrCode != 0 {
 		return "", errors.New(wxResp.ErrMsg)
 	}
-	return "", nil
+	return GenerateToken(wxResp.Openid)
 }

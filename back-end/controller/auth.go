@@ -1,27 +1,42 @@
 package controller
 
 import (
-	"net/http"
+	"back-end/service"
 
 	"github.com/gin-gonic/gin"
 )
 
 func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// 从请求头中获取 token
-		token := c.GetHeader("Authorization")
-		if token == "" {
-			c.JSON(http.StatusUnautz horized, gin.H{"error": "未提供 token"})
+		authHeader := c.GetHeader("Authorization")
+		if authHeader == "" {
+			SetResponse(c, Resp{
+				Code: ResponseAuthError,
+				Msg:  "no token",
+			})
 			c.Abort()
 			return
 		}
-
-		if !validateToken(token) {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "无效的 token"})
+		token := authHeader
+		openId, err := service.ParseToken(token)
+		if err != nil {
+			SetResponse(c, Resp{
+				Code: ResponseAuthError,
+				Msg:  err.Error(),
+			})
 			c.Abort()
 			return
 		}
-
+		user, err := service.GetUserByOpenId(openId)
+		if err != nil {
+			SetResponse(c, Resp{
+				Code: ResponseAuthError,
+				Msg:  err.Error(),
+			})
+			c.Abort()
+			return
+		}
+		c.Set("user", user)
 		c.Next()
 	}
 }

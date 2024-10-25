@@ -1,0 +1,18 @@
+{
+    "wx" : {
+        "appid": "wx6a739c46bd202ee8",
+        "appsecret": "ac9325ffaa953efaf725fdf5c0eb9172"
+    } ,
+    "database": {
+        "host": "localhost",
+        "port": 5432,
+        "user": "xcx",
+        "password": "123456",
+        "database": "xcx"
+    },
+    "server": {
+        "ip" : "39.109.239.145",
+        "port": 80
+    },
+    "jwtkey" : "abbcaasfhasiopfhpad" 
+}

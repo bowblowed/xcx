@@ -9,6 +9,7 @@ import (
 var ResponseSuccess uint = 0
 var ResponseServerError uint = 1
 var ResponseParmError uint = 2
+var ResponseAuthError uint = 3
 
 type Resp struct {
 	Code uint        `json:"code"`

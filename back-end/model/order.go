@@ -32,13 +32,3 @@ type Order struct {
 	User       User
 	OrderItems OrderItems
 }
-
-func CreateOrder(order Order) {
-	db.Create(&order)
-}
-
-func GetOrder(id uint) Order {
-	var order Order
-	db.First(&order)
-	return order
-}
