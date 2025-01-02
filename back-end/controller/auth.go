@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"back-end/model"
 	"back-end/service"
 
 	"github.com/gin-gonic/gin"
@@ -17,17 +18,7 @@ func AuthMiddleware() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		token := authHeader
-		openId, err := service.ParseToken(token)
-		if err != nil {
-			SetResponse(c, Resp{
-				Code: ResponseAuthError,
-				Msg:  err.Error(),
-			})
-			c.Abort()
-			return
-		}
-		user, err := service.GetUserByOpenId(openId)
+		user, err := service.Auth(authHeader)
 		if err != nil {
 			SetResponse(c, Resp{
 				Code: ResponseAuthError,
@@ -39,4 +30,26 @@ func AuthMiddleware() gin.HandlerFunc {
 		c.Set("user", user)
 		c.Next()
 	}
+}
+
+func AdminMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		user := c.MustGet("user")
+		if user.(model.User).Type != model.UserTypeAdmin {
+			SetResponse(c, Resp{
+				Code: ResponseAuthError,
+				Msg:  "no admin",
+			})
+			c.Abort()
+			return
+		}
+		c.Next()
+	}
+}
+func HandleGetUserInfo(c *gin.Context) {
+	user := c.MustGet("user").(model.User)
+	SetResponse(c, Resp{
+		Code: ResponseSuccess,
+		Data: user,
+	})
 }

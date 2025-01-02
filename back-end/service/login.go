@@ -37,5 +37,9 @@ func WxLogin(code string) (string, error) {
 	if wxResp.ErrCode != 0 {
 		return "", errors.New(wxResp.ErrMsg)
 	}
-	return GenerateToken(wxResp.Openid)
+	user, err := GetUserByOpenId(wxResp.Openid)
+	if err != nil {
+		CreateWxUserDefault(wxResp.Openid)
+	}
+	return GenerateToken(fmt.Sprintf("%d", user.ID))
 }

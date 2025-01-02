@@ -2,13 +2,14 @@ package controller
 
 import (
 	"back-end/service"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
 
 func HandleGetCategory(c *gin.Context) {
 	var parm struct {
-		Id uint `form:"id"`
+		ID uint
 	}
 	err := c.ShouldBindBodyWithJSON(&parm)
 	if err != nil {
@@ -18,7 +19,7 @@ func HandleGetCategory(c *gin.Context) {
 		})
 		return
 	}
-	category, err := service.GetCategory(uint(parm.Id))
+	category, err := service.GetCategory(uint(parm.ID))
 	if err != nil {
 		SetResponse(c, Resp{
 			Code: ResponseServerError,
@@ -49,7 +50,7 @@ func HandleListCategory(c *gin.Context) {
 
 func HandleDeleteCategory(c *gin.Context) {
 	var parm struct {
-		Id uint `form:"id"`
+		ID uint
 	}
 	err := c.ShouldBindBodyWithJSON(&parm)
 	if err != nil {
@@ -59,7 +60,7 @@ func HandleDeleteCategory(c *gin.Context) {
 		})
 		return
 	}
-	err = service.DeleteCategory(uint(parm.Id))
+	err = service.DeleteCategory(uint(parm.ID))
 	if err != nil {
 		SetResponse(c, Resp{
 			Code: ResponseServerError,
@@ -73,18 +74,20 @@ func HandleDeleteCategory(c *gin.Context) {
 }
 
 func HandleCreateCategory(c *gin.Context) {
-	var parm struct {
-		Name string `form:"name"`
-	}
-	err := c.ShouldBindBodyWithJSON(&parm)
-	if err != nil {
+	file, err := c.FormFile("file")
+	Name := c.PostForm("Name")
+	if Name == "" {
 		SetResponse(c, Resp{
 			Code: ResponseParmError,
 			Msg:  "parm error",
 		})
 		return
 	}
-	err = service.CreateCategory(parm.Name)
+	if err == nil {
+		err = service.CreateCategory(Name, file)
+	} else {
+		err = service.CreateCategory(Name)
+	}
 	if err != nil {
 		SetResponse(c, Resp{
 			Code: ResponseServerError,
@@ -94,5 +97,62 @@ func HandleCreateCategory(c *gin.Context) {
 	}
 	SetResponse(c, Resp{
 		Code: ResponseSuccess,
+	})
+}
+func HandleUploadCategoryPic(c *gin.Context) {
+	file, err := c.FormFile("file")
+	if err != nil {
+		SetResponse(c, Resp{
+			Code: ResponseParmError,
+			Msg:  "parm error",
+		})
+		return
+	}
+	idstr := c.PostForm("ID")
+	id, err := strconv.Atoi(idstr)
+	if err != nil {
+		SetResponse(c, Resp{
+			Code: ResponseParmError,
+			Msg:  "parm error",
+		})
+		return
+	}
+	err = service.UploadCategoryPic(file, uint(id))
+	if err != nil {
+		SetResponse(c, Resp{
+			Code: ResponseServerError,
+			Msg:  err.Error(),
+		})
+		return
+	}
+	SetResponse(c, Resp{
+		Code: ResponseSuccess,
+	})
+
+}
+
+func HandleListProductByCategoryId(c *gin.Context) {
+	var parm struct {
+		ID uint
+	}
+	err := c.ShouldBindBodyWithJSON(&parm)
+	if err != nil {
+		SetResponse(c, Resp{
+			Code: ResponseParmError,
+			Msg:  "parm error",
+		})
+		return
+	}
+	products, err := service.ListProductsByCategory(uint(parm.ID))
+	if err != nil {
+		SetResponse(c, Resp{
+			Code: ResponseServerError,
+			Msg:  err.Error(),
+		})
+		return
+	}
+	SetResponse(c, Resp{
+		Code: ResponseSuccess,
+		Data: products,
 	})
 }

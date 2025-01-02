@@ -11,8 +11,9 @@
         "database": "xcx"
     },
     "server": {
-        "ip" : "39.109.239.145",
-        "port": 80
+        "Domain" : "lipeiheng.fun" ,
+        "ip" : "39.107.239.145",
+        "port": 443
     },
     "jwtkey" : "abbcaasfhasiopfhpad" 
 }

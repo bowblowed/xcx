@@ -18,5 +18,24 @@ func init() {
 		panic("无法连接到数据库：" + err.Error())
 	}
 	fmt.Println("连接数据库成功")
-	DB.AutoMigrate(&Category{}, &Product{}, &Order{}, &OrderItem{}, &User{}, &Banner{})
+	err = DB.AutoMigrate(&Category{}, &Product{}, &Order{}, &User{}, &Banner{}, &File{}, &PriceTag{}, &ShopCart{})
+	if err != nil {
+		panic("无法迁移数据库：" + err.Error())
+	}
+}
+
+func ClearDB() {
+	migrator := DB.Migrator()
+	tableNames, err := migrator.GetTables()
+	if err != nil {
+		panic(fmt.Sprintf("获取表名失败：%v", err))
+	}
+
+	for _, tableName := range tableNames {
+		if err := migrator.DropTable(tableName); err != nil {
+			fmt.Printf("删除表 %s 失败：%v\n", tableName, err)
+		} else {
+			fmt.Printf("成功删除表 %s\n", tableName)
+		}
+	}
 }

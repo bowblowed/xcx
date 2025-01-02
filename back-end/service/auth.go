@@ -2,16 +2,16 @@ package service
 
 import (
 	"back-end/config"
+	"back-end/model"
 	"fmt"
+	"strconv"
 
 	"github.com/dgrijalva/jwt-go"
 )
 
-func GenerateToken(openID string) (string, error) {
-	// 设置过期时间，这里设置为 1 小时
-	// 创建一个新的 token 对象
+func GenerateToken(id string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"openid": openID,
+		"ID": id,
 	})
 	// 使用密钥进行签名
 	tokenString, err := token.SignedString([]byte(config.Jwtkey))
@@ -28,9 +28,22 @@ func ParseToken(tokenString string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	if openid, ok := token.Claims.(jwt.MapClaims)["openid"]; ok && token.Valid {
-		return openid.(string), nil
+	m := token.Claims.(jwt.MapClaims)
+	if id, ok := m["ID"]; ok && token.Valid {
+		return id.(string), nil
 	} else {
 		return "", fmt.Errorf("invalid token")
 	}
+}
+
+func Auth(auth string) (model.User, error) {
+	ID, err := ParseToken(auth)
+	if err != nil {
+		return model.User{}, err
+	}
+	id, err := strconv.Atoi(ID)
+	if err != nil {
+		return model.User{}, err
+	}
+	return GetUser(uint(id))
 }

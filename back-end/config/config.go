@@ -11,8 +11,9 @@ type wx struct {
 }
 
 type server struct {
-	Ip   string `json:"ip"`
-	Port uint   `json:"port"`
+	Domain string
+	Ip     string `json:"ip"`
+	Port   uint   `json:"port"`
 }
 
 type database struct {

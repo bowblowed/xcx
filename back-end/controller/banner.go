@@ -2,23 +2,20 @@ package controller
 
 import (
 	"back-end/service"
-	"fmt"
-	"time"
 
 	"github.com/gin-gonic/gin"
 )
 
 func HandleUploadBanner(c *gin.Context) {
-	file, err := c.FormFile("banner")
+	file, err := c.FormFile("file")
 	if err != nil {
 		SetResponse(c, Resp{
 			Code: ResponseParmError,
-			Msg:  "parm error",
+			Msg:  err.Error(),
 		})
 		return
 	}
-	name := "banner_" + fmt.Sprint(time.Now().Unix())
-	err = c.SaveUploadedFile(file, "./file/"+name)
+	err = service.CreateBanner(file)
 	if err != nil {
 		SetResponse(c, Resp{
 			Code: ResponseServerError,
@@ -26,37 +23,11 @@ func HandleUploadBanner(c *gin.Context) {
 		})
 		return
 	}
-	service.CreateBanner(baseUrl + name)
 	SetResponse(c, Resp{
 		Code: ResponseSuccess,
 	})
 }
 
-func HandleGetBanner(c *gin.Context) {
-	var parm struct {
-		Id uint `form:"id"`
-	}
-	err := c.ShouldBindBodyWithJSON(&parm)
-	if err != nil {
-		SetResponse(c, Resp{
-			Code: ResponseParmError,
-			Msg:  "parm error",
-		})
-		return
-	}
-	banner, err := service.GetBanner(parm.Id)
-	if err != nil {
-		SetResponse(c, Resp{
-			Code: ResponseServerError,
-			Msg:  err.Error(),
-		})
-		return
-	}
-	SetResponse(c, Resp{
-		Code: ResponseSuccess,
-		Data: banner,
-	})
-}
 func HandleListBanner(c *gin.Context) {
 	banners, err := service.ListBanners()
 	if err != nil {
@@ -74,7 +45,7 @@ func HandleListBanner(c *gin.Context) {
 
 func HandleDeleteBanner(c *gin.Context) {
 	var parm struct {
-		Id uint `form:"id"`
+		ID uint
 	}
 	err := c.ShouldBindBodyWithJSON(&parm)
 	if err != nil {
@@ -84,7 +55,7 @@ func HandleDeleteBanner(c *gin.Context) {
 		})
 		return
 	}
-	err = service.DeleteBanner(parm.Id)
+	err = service.DeleteBanner(parm.ID)
 	if err != nil {
 		SetResponse(c, Resp{
 			Code: ResponseServerError,
