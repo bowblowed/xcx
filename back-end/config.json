@@ -1,0 +1,19 @@
+{
+    "wx" : {
+        "appid": "wx6a739c46bd202ee8",
+        "appsecret": "ac9325ffaa953efaf725fdf5c0eb9172"
+    } ,
+    "database": {
+        "host": "localhost",
+        "port": 5432,
+        "user": "xcx",
+        "password": "123456",
+        "database": "xcx"
+    },
+    "server": {
+        "Domain" : "lipeiheng.fun" ,
+        "ip" : "39.107.239.145",
+        "port": 443
+    },
+    "jwtkey" : "abbcaasfhasiopfhpad" 
+}

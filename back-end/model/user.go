@@ -4,12 +4,15 @@ import "gorm.io/gorm"
 
 type User struct {
 	gorm.Model
+	Type        string
 	Name        string
+	WxNumber    string
 	WxOpenId    string
 	PhoneNumber string
 	Address     string
+	ShopCartId  uint
 }
 
-func CreateUser(user User) {
-	db.Create(&user)
-}
+var UserTypeAdmin = "admin"
+var UserTypeUserUnsigned = "userUnSigned"
+var UserTypeUserSigned = "userSigned"
