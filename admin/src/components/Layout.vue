@@ -1,48 +1,44 @@
-<script setup lang="ts">
-import Asideitem from './Asideitem.vue';
-import { routes } from '@/router'
-import { RouterView, useRouter, type RouteRecord, type RouteRecordRaw } from 'vue-router'
+<script lang="ts" setup>
+import { useRouter } from 'vue-router';
+import { routes } from '../router/index'
 const router = useRouter()
-
-function routeChange(route: RouteRecordRaw) {
-  router.push(route.path)
+function ItemClick(item: any) {
+  router.push(item.path)
 }
 
 </script>
+
 <template>
-    <div class="main-layout">
-      <el-container class="layout-container">
-        <el-aside width="200px" class="layout-aside">
-          <el-scrollbar class="layout-aside-scrollbar">
-            <Asideitem v-for="route in routes[0].children" :route="route" @click="routeChange(route)">
-            </Asideitem>  
-          </el-scrollbar> 
-        </el-aside>
-        <el-container>
-          <el-header>Header</el-header>
-          <RouterView />
-        </el-container>
-      </el-container>
-    </div>
+  <div class="layout">
+  <el-row class="layout-row">
+    <el-col :span="3">
+      <el-menu class="mune">
+        <el-menu-item v-for="(item, index) in routes[0].children" :key="index" @click="ItemClick(item)">
+          {{ item.name }}
+        </el-menu-item>
+      </el-menu>
+    </el-col>
+    <el-col :span="21">
+      <router-view class="main-view" />
+    </el-col>
+  </el-row>
+  </div >
 </template>
-<style lang="css" scoped>
-.main-layout {
-  width: 100%;;
+
+
+<style>
+.layout{
   height: 100%;
-}
-.layout-container {
   width: 100%;
-  height: 100%;
-}
-.layout-aside-scrollbar {
-  width: 100%;
-  height: 100%;
 }
 
-.layout-aside {
-  background-color: #909399;
-  display: flex;
-  flex-direction: column;
-  align-items: start;
+.layout-row{
+  height: 100%;
+}
+.mune{
+  height: 100%;
+}
+.main-view {
+  height: 100%;
 }
 </style>
